@@ -71,42 +71,6 @@ pm2 save
 
 # ---------------------------------- FrontEnd---------------------------------------
 
- ### Frontend deploy process ###
-```
-git clone https://github.com/CloudTechDevOps/2nd10WeeksofCloudOps-main.git
-cd client 
-```
-##### edit the config.js
-```
-vi client/src/pages/config.js
-  
-const API_BASE_URL = "http://api.narni.co.in";
- ````
-in above line change to your backend loadbalncer url
-const API_BASE_URL = "http://backend-loadbalancer-url";
-```
-sudo dnf install -y nodejs
-sudo yum install nginx
-sudo systemctl start nginx
-sudo systemctl enable nginx
-```
-### then go to client directory 
-### run below commands
-
-### ****(Use npm run build:
-### When preparing the app for deployment (e.g., to a server or hosting service like AWS, Netlify, or Vercel).
-### Use npm start:
-### During development or to start the app in production (for backend apps).)*****
-```
-npm install 
-npm run build
-sudo cp -r build/* /usr/share/nginx/html
-```
-# your frontend part is completed 
-
-### #### after that create frontend tg and loadbalncer and check your loadbalncer is giving project output along with books 
-# add the books 
-
 # revrse proxy
 
 ### if you want to use internnal loadbalncer please go through below procress
@@ -114,10 +78,8 @@ sudo cp -r build/* /usr/share/nginx/html
 
 This repository contains an Nginx reverse-proxy configuration that serves a React frontend and proxies API requests to a backend at private IP or loadbalancer.
 
-.
-
 ## Files
-- proxy.conf — Nginx server block (this file)
+- nginx.conf — Nginx server block (this file)
 
 ## Behavior summary (from `proxy.conf`)
 - Listens on port 80.
@@ -143,32 +105,38 @@ sudo systemctl enable --now nginx
 ```
 ### create a proxy file and paste the file from git and chage the backend private ip if you are using internal loadbalncer change it 
 ```bash
-sudo vi /etc/nginx/conf.d/reverse-proxy.conf
+sudo vi /etc/nginx/conf.d/nginx.conf
 ```
-### paste below file and change loadbalancer url
+### paste below file and change loadbalancer url inplace of local host
 ```
 server {
     listen 80;
-    server_name _;
-
-    # 🔥  API reverse proxy (WITH PATH FIX)
-    location ^~ /api/ {
-        proxy_pass http://backend-loadbalncer-url/;
-        proxy_http_version 1.1;
-
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    # React build
     root /usr/share/nginx/html;
     index index.html;
 
     location / {
         try_files $uri $uri/ /index.html;
     }
+
+    location /api {
+        proxy_pass http://localhost;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+   location /socket.io {
+        proxy_pass http://localhost;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+    }
+
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml;
 }
 ```
 # Verify
@@ -193,14 +161,13 @@ sudo cp -r build/* /usr/share/nginx/html/
 
 # reload nginx
 sudo systemctl reload nginx
+sudo systemctl enable nginx
 ```
 
 If your React app expects the app to be served at `/` this config will work as-is because the `location /` block uses `try_files` to return `index.html` for client routes.
 
 ## Sample Backend Setup (Amazon Linux) — Node.js / Express
 These instructions create a minimal API that listens on port 80 and matches the `proxy_pass` target.
-
-
 
 
 **Thank you so much for reading..😅**
