@@ -23,6 +23,7 @@
 3.Create two TG and loadbalncers one is for frontend another one is for backend 
 4.Create both loadblancers in public subnets only and loadbalancer type s internet facing only becuser internal loadbalncer not working for our project 
 ```
+## ------------------------------------Backend-------------
 ### ->>connect to backend server--
 ```
  git clone https://github.com/CloudTechDevOps/2nd10WeeksofCloudOps-main.git
@@ -40,6 +41,8 @@ PORT=3306
 ```
 ```
 yum install mariadb105-server
+sudo dnf install -y nodejs
+sudo dnf install -y nodejs
 ```
 #### SSH into backend server and then run test.sql script from backend to create tables and records 
 ```
@@ -48,25 +51,21 @@ mysql -h book.rds.com -u admin -p<password> < test.sql
 
 ### Backend deploy process ###
 ```
-sudo dnf install -y nodejs
-
 cd backend
 
 npm install
 
 npm install dotenv
 
-npm install -g pm2
+sudo pm2 start index.js --name node-app
 
-pm2 start index.js --name node-app
-
-pm2 startup
+sudo pm2 startup
 
 sudo systemctl enable pm2-root
 
-pm2 save
+sudo pm2 save
 ```
-#### after that create backend tg and loadbalncer and check your loadbalncer is giving hello response or not 
+#### after that create backend tg and loadbalncer and check your loadbalncer is giving response or not 
 
 
 # ---------------------------------- FrontEnd---------------------------------------
@@ -81,29 +80,13 @@ This repository contains an Nginx reverse-proxy configuration that serves a Reac
 ## Files
 - nginx.conf — Nginx server block (this file)
 
-## Behavior summary (from `proxy.conf`)
-- Listens on port 80.
-- Routes requests starting with `/api/` to private ip or loadbalncer`.
-  - Example: `GET /api/books` -> proxied to privateip or loadbalncer
-- Serves a React single-page app from `/usr/share/nginx/html` and falls back to `index.html` for client routes.
-
-
-## Install Nginx on Amazon Linux 2
-Run the following on the public-facing EC2 (nginx) instance.
-
-### After cloneing your your config.js file url must be /api only
-once chek in your config file below one is comented or uncomented if commented please uncoment and build the package
-```
-const API_BASE_URL = "/api";  // For reverse proxy it is mandatory so dont change
-
-```
 ```bash
 sudo yum update -y
 sudo yum install -y nginx
 # Enable and start nginx
 sudo systemctl enable --now nginx
 ```
-### create a proxy file and paste the file from git and chage the backend private ip if you are using internal loadbalncer change it 
+### create a proxy file and paste the file from git and chage the backend private ip  if you are using internal loadbalncer change it 
 ```bash
 sudo vi /etc/nginx/conf.d/nginx.conf
 ```
@@ -151,8 +134,9 @@ sudo systemctl reload nginx
 On the machine where you build the React app (or directly on the nginx server):
 
 ```bash
-# build (on your dev machine or CI)
+
 npm install
+
 npm run build
 
 # Copy the build files to nginx root on the nginx host
