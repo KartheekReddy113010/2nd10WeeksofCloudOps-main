@@ -93,7 +93,7 @@ jobs:
           BACKEND_IMAGE=${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/backend:${{ github.sha }}
 
           sed -i "s|image:.*|image: ${FRONTEND_IMAGE}|g" kubernetes-files/frontend-deployment.yml
-          sed -i "s|image:.*|image: ${BACKEND_IMAGE}|g" kubernetes-files/backend-deployment.yml
+          sed -i "s|image:.*|image: $BACKEND_IMAGE|g" kubernetes-files/backend-deployment.yaml
 
       ####################################################
       # Commit Updated YAMLs
