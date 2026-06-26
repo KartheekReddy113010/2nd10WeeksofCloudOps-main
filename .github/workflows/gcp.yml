@@ -5,6 +5,7 @@ on:
     branches:
       - main
 
+
 env:
   PROJECT_ID: playground-s-11-0d817a7e
   REGION: us-central1
