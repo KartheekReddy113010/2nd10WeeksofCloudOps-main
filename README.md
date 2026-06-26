@@ -23,7 +23,7 @@
 3.Create two TG and loadbalncers one is for frontend another one is for backend 
 4.Create both loadblancers in public subnets only and loadbalancer type s internet facing only becuser internal loadbalncer not working for our project 
 ```
-## ------------------------------------Backend-------------
+## ------------------------------------Backend------------
 ### ->>connect to backend server--
 ```
  git clone https://github.com/CloudTechDevOps/2nd10WeeksofCloudOps-main.git
