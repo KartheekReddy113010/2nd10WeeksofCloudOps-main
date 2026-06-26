@@ -6,9 +6,9 @@ on:
       - main
 
 env:
-  PROJECT_ID: your-gcp-project-id
+  PROJECT_ID: playground-s-11-0d817a7e
   REGION: us-central1
-  REPOSITORY: applications
+  REPOSITORY: fullstack
 
 jobs:
   build-and-push:
